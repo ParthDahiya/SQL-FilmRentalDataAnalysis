@@ -22,7 +22,7 @@ SELECT * FROM film LIMIT 500;
 SELECT COUNT(*) FROM film
 WHERE rental_rate = 0.99;
 
-/* we want to see rental rate and how many movies are in each rental rate categories*/
+/*rental rate and no. of movies are in each rental rate categories*/
 SELECT rental_rate, COUNT(*) AS total_number_of_movies
 FROM film
 GROUP BY rental_rate;
@@ -31,7 +31,7 @@ SELECT rental_rate, COUNT(*) AS total_number_of_movies
 FROM film
 GROUP BY 1;
 
-/*Which rating do we have the most films in?*/
+/*Total no. of movies for each rating*/
 SELECT rating,COUNT(*) AS total_number_of_movies
 FROM film
 GROUP BY 1;
@@ -58,7 +58,7 @@ JOIN category c ON fc.category_id = c.category_id
 JOIN language l ON l.language_id = f.language_id;
 
 
-/* How many times each movie has been rented out? */
+/* How many times each movie has been rented out and most rented movie*/
 SELECT i.film_id, f.title, COUNT(i.film_id) AS total_number_of_rental_times
 FROM rental r
 JOIN inventory i ON r.inventory_id = i.inventory_id
@@ -67,7 +67,7 @@ GROUP BY i.film_id
 ORDER BY 3 DESC;
 
 
-/*Revenue per Movie */
+/*Total Revenue per Movie */
 SELECT i.film_id, f.title, COUNT(i.film_id) AS total_number_of_rental_times, f.rental_rate, COUNT(i.film_id)*f.rental_rate AS revenue_per_movie
 FROM rental r
 JOIN inventory i ON r.inventory_id = i.inventory_id
@@ -81,11 +81,11 @@ SELECT c.customer_id, CONCAT(first_name, ' ', last_name) AS Name, SUM(p.amount) 
 FROM customer c
 JOIN payment p ON c.customer_id = p.customer_id
 GROUP BY 1
-ORDER BY 2 DESC;
+ORDER BY 3 DESC;
 
 
 /* What Store has brought the most revenue */
-SELECT s.store_id, SUM(p.amount) AS "Total Spending"
+SELECT s.store_id, SUM(p.amount) AS "Total revenue"
 FROM store s
 JOIN inventory i ON i.store_id = s.store_id
 JOIN rental r ON r.inventory_id = i.inventory_id
@@ -139,16 +139,16 @@ SELECT LEFT(rental_date,7) AS "Month",
 FROM rental
 GROUP BY 1;
 
-/*Number of Distinct Film Rented Each Month */
+/*Most Rented Film Each Month */
 SELECT i.film_id, f.title, LEFT(r.rental_date,7) AS "Month", COUNT(i.film_id) AS "Total Number Of Rental Times"
 FROM rental r
 JOIN inventory i ON r.inventory_id = i.inventory_id
 JOIN film f ON f.film_id = i.film_id
-GROUP BY i.film_id, LEFT(r.rental_date,7)
-ORDER BY 1, 2, 3;
+GROUP BY i.film_id, f.title
+ORDER BY 4 desc;
 
-/* Number of Rentals in Comedy , Sports and Family */
-SELECT c.name, COUNT(c.name) AS "Number of Rentals"
+/* Number of Rentals as per Genre (Comedy , Sports, Family) */
+SELECT c.name AS 'Category', COUNT(c.name) AS "Number of Rentals"
 FROM film f
 JOIN film_category fc ON fc.film_id = f.film_id
 JOIN category c ON c.category_id = fc.category_id
@@ -157,7 +157,7 @@ JOIN rental r ON r.inventory_id = i.inventory_id
 WHERE c.name IN ("Comedy", "Sports", "Family")
 GROUP BY 1;
 
-/*Users who have rented at least 3 times*/
+/*Total no. of rentals by each customer and most active customer*/
 SELECT c.customer_id, CONCAT(c.first_name, " ", c.last_name) AS "Customer Name", COUNT(c.customer_id) AS "Total Rentals"
 FROM customer c
 JOIN rental r ON c.customer_id = r.customer_id
@@ -165,14 +165,13 @@ GROUP BY 1
 HAVING COUNT(c.customer_id) >= 3
 ORDER BY 1;
 
-/*How much revenue has one single store made over PG13 and R rated films*/
+/*Total revenue on the bases of rating and stores*/
 SELECT s.store_id, f.rating, SUM(p.amount) AS "Total Revenue"
 FROM store s 
 JOIN inventory i ON i.store_id = s.store_id
 JOIN rental r ON r.inventory_id = i.inventory_id
 JOIN payment p ON p.rental_id = r.rental_id
 JOIN film f ON f.film_id = i.film_id
-WHERE f.rating IN ("PG-13", "R")
 GROUP BY 1,2;
 
 /*******************************************************/
