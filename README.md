@@ -4,7 +4,7 @@
 
 ## Some of the Key Findings:
 
-### 1. rental rate and no. of movies are in each rental rate categories:
+### 1. Rental rate and no. of movies are in each rental rate categories:
 ![image](https://github.com/ParthDahiya/SQL-FilmRentalDataAnalysis/assets/85840226/f6f8e1e5-3322-435e-94b6-f15afa48eee2)
 
 ### 2. Total no. of movies for each rating:
